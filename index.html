@@ -12,12 +12,12 @@
 
   <!-- NOMBRES -->
   <div id="nameBox">
-    <input type="text" id="playerName" placeholder="Tu nombre">
-    <button onclick="setNames()">Guardar nombre</button>
-    <button onclick="generateOpponent()">Generar oponente</button>
+    <input type="text" id="player1Name" placeholder="Nombre Jugador 1 (X)">
+    <input type="text" id="player2Name" placeholder="Nombre Jugador 2 (O)">
+    <button onclick="setNames()">Guardar nombres</button>
   </div>
 
-  <h2 id="playersDisplay">Jugador: ---  |  Oponente: ---</h2>
+  <h2 id="playersDisplay">Jugador X: ---  |  Jugador O: ---</h2>
 
   <!-- MARCADOR Y TIEMPO -->
   <h2 id="scoreboard">X: 0 | O: 0</h2>
@@ -37,8 +37,8 @@
     const scoreboard = document.getElementById("scoreboard");
     const timerDisplay = document.getElementById("timer");
 
-    let playerName = "---";
-    let opponentName = "---";
+    let player1Name = "---";
+    let player2Name = "---";
 
     let currentPlayer = "X";
     let gameActive = true;
@@ -50,26 +50,18 @@
     let timer = 0;
     let timerInterval = null;
 
-    const funnyNames = [
-      "Sir PicklePants", "Captain Noodle", "Mr. FluffyFingers",
-      "Lady Burrito", "Dr. BananaSmash", "Lord ChickenWing",
-      "Professor GoofyFace", "Queen Marshmallow", "TurboToaster",
-      "SneakyPancake"
-    ];
-
     function setNames() {
-      const input = document.getElementById("playerName").value.trim();
-      playerName = input !== "" ? input : "Player X";
-      updateNameDisplay();
-    }
+      const p1 = document.getElementById("player1Name").value.trim();
+      const p2 = document.getElementById("player2Name").value.trim();
 
-    function generateOpponent() {
-      opponentName = funnyNames[Math.floor(Math.random() * funnyNames.length)];
+      player1Name = p1 !== "" ? p1 : "Jugador X";
+      player2Name = p2 !== "" ? p2 : "Jugador O";
+
       updateNameDisplay();
     }
 
     function updateNameDisplay() {
-      playersDisplay.textContent = `Jugador: ${playerName}  |  Oponente: ${opponentName}`;
+      playersDisplay.textContent = `Jugador X: ${player1Name}  |  Jugador O: ${player2Name}`;
     }
 
     const winningConditions = [
@@ -102,23 +94,18 @@
     function handleCellClick(e) {
       const index = e.target.dataset.index;
 
-      if (gameState[index] !== "" || !gameActive || currentPlayer !== "X") return;
+      if (gameState[index] !== "" || !gameActive) return;
 
-      makeMove(index, "X");
-
-      if (!gameActive) return;
-
-      setTimeout(botMove, 400);
+      makeMove(index, currentPlayer);
     }
 
     function makeMove(index, player) {
-      if (gameState[index] !== "") return;
-
       gameState[index] = player;
       document.querySelector(`[data-index='${index}']`).textContent = player;
 
       if (checkWinner(player)) {
-        status.textContent = `Ganó ${player === "X" ? playerName : opponentName}`;
+        const winnerName = player === "X" ? player1Name : player2Name;
+        status.textContent = `Ganó ${winnerName}`;
         gameActive = false;
         clearInterval(timerInterval);
 
@@ -140,41 +127,12 @@
       status.textContent = `Turno de ${currentPlayer}`;
     }
 
-    function botMove() {
-      if (!gameActive) return;
-
-      const index = getBestMove();
-      makeMove(index, "O");
-    }
-
-    function getBestMove() {
-      for (let [a, b, c] of winningConditions) {
-        const line = [gameState[a], gameState[b], gameState[c]];
-        if (line.filter(v => v === "O").length === 2 && line.includes("")) {
-          return [a, b, c][line.indexOf("")];
-        }
-      }
-
-      for (let [a, b, c] of winningConditions) {
-        const line = [gameState[a], gameState[b], gameState[c]];
-        if (line.filter(v => v === "X").length === 2 && line.includes("")) {
-          return [a, b, c][line.indexOf("")];
-        }
-      }
-
-      const emptyCells = gameState
-        .map((v, i) => (v === "" ? i : null))
-        .filter(v => v !== null);
-
-      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    }
-
     function checkWinner(player) {
       return winningConditions.some(([a, b, c]) => {
         return (
-          gameState[a] !== "" &&
-          gameState[a] === gameState[b] &&
-          gameState[a] === gameState[c]
+          gameState[a] === player &&
+          gameState[b] === player &&
+          gameState[c] === player
         );
       });
     }
