@@ -4,68 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tic Tac Toe</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    h1 {
-      margin-top: 30px;
-    }
-
-    #status {
-      font-size: 24px;
-      margin: 20px 0;
-    }
-
-    .board {
-      width: 320px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 0 auto;
-    }
-
-    .cell {
-      width: 100px;
-      height: 100px;
-      background: white;
-      border: 2px solid #333;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .cell:hover {
-      background: #e6e6e6;
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <h1>Tic Tac Toe</h1>
+  <h1>Raul's Tik Tak Toe</h1>
+
+
   <div id="status">Turno de X</div>
+
   <div class="board" id="board"></div>
+
   <button onclick="restartGame()">Reiniciar</button>
 
   <script>
     const board = document.getElementById("board");
     const status = document.getElementById("status");
 
-    let currentPlayer = "X";
+    let currentPlayer = "X"; // Tú
     let gameActive = true;
     let gameState = ["", "", "", "", "", "", "", "", ""];
 
@@ -94,13 +51,24 @@
     function handleCellClick(e) {
       const index = e.target.dataset.index;
 
-      if (gameState[index] !== "" || !gameActive) return;
+      if (gameState[index] !== "" || !gameActive || currentPlayer !== "X") return;
 
-      gameState[index] = currentPlayer;
-      e.target.textContent = currentPlayer;
+      makeMove(index, "X");
 
-      if (checkWinner()) {
-        status.textContent = `Ganó ${currentPlayer}`;
+      if (!gameActive) return;
+
+      // IA juega después de ti
+      setTimeout(botMove, 400);
+    }
+
+    function makeMove(index, player) {
+      if (gameState[index] !== "") return;
+
+      gameState[index] = player;
+      document.querySelector(`[data-index='${index}']`).textContent = player;
+
+      if (checkWinner(player)) {
+        status.textContent = `Ganó ${player}`;
         gameActive = false;
         return;
       }
@@ -111,11 +79,44 @@
         return;
       }
 
-      currentPlayer = currentPlayer === "X" ? "O" : "X";
+      currentPlayer = player === "X" ? "O" : "X";
       status.textContent = `Turno de ${currentPlayer}`;
     }
 
-    function checkWinner() {
+    function botMove() {
+      if (!gameActive) return;
+
+      const index = getBestMove();
+      makeMove(index, "O");
+    }
+
+    // IA básica: ganar > bloquear > aleatorio
+    function getBestMove() {
+      // 1. IA intenta ganar
+      for (let [a, b, c] of winningConditions) {
+        const line = [gameState[a], gameState[b], gameState[c]];
+        if (line.filter(v => v === "O").length === 2 && line.includes("")) {
+          return [a, b, c][line.indexOf("")];
+        }
+      }
+
+      // 2. IA intenta bloquear a X
+      for (let [a, b, c] of winningConditions) {
+        const line = [gameState[a], gameState[b], gameState[c]];
+        if (line.filter(v => v === "X").length === 2 && line.includes("")) {
+          return [a, b, c][line.indexOf("")];
+        }
+      }
+
+      // 3. Si no hay nada urgente, elige una casilla vacía al azar
+      const emptyCells = gameState
+        .map((v, i) => (v === "" ? i : null))
+        .filter(v => v !== null);
+
+      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    }
+
+    function checkWinner(player) {
       return winningConditions.some(([a, b, c]) => {
         return (
           gameState[a] !== "" &&
@@ -137,5 +138,3 @@
   </script>
 </body>
 </html>
-
-
