@@ -3,17 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tic Tac Toe</title>
+  <title>Raul's Tik Tak Toe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <h1>Tic Tac Toe</h1>
   <h1>Raul's Tik Tak Toe</h1>
 
+  <!-- NOMBRES -->
+  <div id="nameBox">
+    <input type="text" id="playerName" placeholder="Tu nombre">
+    <button onclick="setNames()">Guardar nombre</button>
+    <button onclick="generateOpponent()">Generar oponente</button>
+  </div>
+
+  <h2 id="playersDisplay">Jugador: ---  |  Oponente: ---</h2>
+
+  <!-- MARCADOR Y TIEMPO -->
+  <h2 id="scoreboard">X: 0 | O: 0</h2>
+  <h3 id="timer">Tiempo: 0s</h3>
 
   <div id="status">Turno de X</div>
 
+  <!-- TABLERO -->
   <div class="board" id="board"></div>
 
   <button onclick="restartGame()">Reiniciar</button>
@@ -21,21 +33,59 @@
   <script>
     const board = document.getElementById("board");
     const status = document.getElementById("status");
+    const playersDisplay = document.getElementById("playersDisplay");
+    const scoreboard = document.getElementById("scoreboard");
+    const timerDisplay = document.getElementById("timer");
 
-    let currentPlayer = "X"; // Tú
+    let playerName = "---";
+    let opponentName = "---";
+
+    let currentPlayer = "X";
     let gameActive = true;
     let gameState = ["", "", "", "", "", "", "", "", ""];
 
-    const winningConditions = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6]
+    let scoreX = 0;
+    let scoreO = 0;
+
+    let timer = 0;
+    let timerInterval = null;
+
+    const funnyNames = [
+      "Sir PicklePants", "Captain Noodle", "Mr. FluffyFingers",
+      "Lady Burrito", "Dr. BananaSmash", "Lord ChickenWing",
+      "Professor GoofyFace", "Queen Marshmallow", "TurboToaster",
+      "SneakyPancake"
     ];
+
+    function setNames() {
+      const input = document.getElementById("playerName").value.trim();
+      playerName = input !== "" ? input : "Player X";
+      updateNameDisplay();
+    }
+
+    function generateOpponent() {
+      opponentName = funnyNames[Math.floor(Math.random() * funnyNames.length)];
+      updateNameDisplay();
+    }
+
+    function updateNameDisplay() {
+      playersDisplay.textContent = `Jugador: ${playerName}  |  Oponente: ${opponentName}`;
+    }
+
+    const winningConditions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    function startTimer() {
+      timer = 0;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timer++;
+        timerDisplay.textContent = `Tiempo: ${timer}s`;
+      }, 1000);
+    }
 
     function createBoard() {
       board.innerHTML = "";
@@ -46,6 +96,7 @@
         cell.addEventListener("click", handleCellClick);
         board.appendChild(cell);
       }
+      startTimer();
     }
 
     function handleCellClick(e) {
@@ -57,7 +108,6 @@
 
       if (!gameActive) return;
 
-      // IA juega después de ti
       setTimeout(botMove, 400);
     }
 
@@ -68,14 +118,21 @@
       document.querySelector(`[data-index='${index}']`).textContent = player;
 
       if (checkWinner(player)) {
-        status.textContent = `Ganó ${player}`;
+        status.textContent = `Ganó ${player === "X" ? playerName : opponentName}`;
         gameActive = false;
+        clearInterval(timerInterval);
+
+        if (player === "X") scoreX++;
+        else scoreO++;
+
+        updateScoreboard();
         return;
       }
 
       if (!gameState.includes("")) {
         status.textContent = "Empate";
         gameActive = false;
+        clearInterval(timerInterval);
         return;
       }
 
@@ -90,9 +147,7 @@
       makeMove(index, "O");
     }
 
-    // IA básica: ganar > bloquear > aleatorio
     function getBestMove() {
-      // 1. IA intenta ganar
       for (let [a, b, c] of winningConditions) {
         const line = [gameState[a], gameState[b], gameState[c]];
         if (line.filter(v => v === "O").length === 2 && line.includes("")) {
@@ -100,7 +155,6 @@
         }
       }
 
-      // 2. IA intenta bloquear a X
       for (let [a, b, c] of winningConditions) {
         const line = [gameState[a], gameState[b], gameState[c]];
         if (line.filter(v => v === "X").length === 2 && line.includes("")) {
@@ -108,7 +162,6 @@
         }
       }
 
-      // 3. Si no hay nada urgente, elige una casilla vacía al azar
       const emptyCells = gameState
         .map((v, i) => (v === "" ? i : null))
         .filter(v => v !== null);
@@ -124,6 +177,10 @@
           gameState[a] === gameState[c]
         );
       });
+    }
+
+    function updateScoreboard() {
+      scoreboard.textContent = `X: ${scoreX} | O: ${scoreO}`;
     }
 
     function restartGame() {
