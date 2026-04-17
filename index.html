@@ -3,38 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Raul's Tik Tak Toe</title>
+  <title>AM I Right Tik Tak Toe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="cursor-x">
-  <h1>Raul's Tik Tak Toe</h1>
+  <h1>AM I Right Tik Tak Toe</h1>
 
   <!-- NOMBRES -->
   <div id="nameBox">
     <input type="text" id="player1Name" placeholder="Nombre Jugador 1 (X)">
     <input type="text" id="player2Name" placeholder="Nombre Jugador 2 (O)">
-    <button onclick="setNames()">Guardar nombres</button>
+    <button onclick="setNames()">Save Names</button>
   </div>
 
-  <h2 id="playersDisplay">Jugador X: X  |  Jugador O: O</h2>
+  <h2 id="playersDisplay">Player X: X  |  Player O: O</h2>
 
   <!-- MARCADOR Y TIEMPO -->
   <h2 id="scoreboard">X: 0 | O: 0</h2>
-  <h3 id="timer">Tiempo: 0s</h3>
+  <h3 id="timer">Time: 0s</h3>
 
-  <div id="status">Turno de X</div>
+  <div id="status">Turn of X</div>
 
   <!-- TABLERO -->
   <div class="board" id="board"></div>
 
-  <button onclick="restartGame()">Reiniciar</button>
+  <button onclick="restartGame()">Restart Game</button>
 
   <!-- TABLA DE ESTADÍSTICAS -->
-  <h2>Estadísticas</h2>
+  <h2>Statistics</h2>
   <table id="statsTable" border="1" cellpadding="8">
     <tr>
-      <th>Jugador</th>
+      <th>Player</th>
       <th>Wins</th>
       <th>Losses</th>
     </tr>
