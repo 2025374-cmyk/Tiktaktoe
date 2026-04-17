@@ -222,3 +222,6 @@ button:hover {
     <text x='0' y='24' font-size='28' font-weight='bold' fill='cyan'>O</text>\
   </svg>") 0 24, auto;
 }
+.shamrock {
+  will-change: transform;
+}
