@@ -6,9 +6,9 @@ body {
   margin: 0;
   padding: 0;
   text-align: center;
-  color: #fff;
+  color: #269f4a;
 
-  background: linear-gradient(135deg, #0b3d0b, #0f5f0f);
+  background: linear-gradient(135deg, #0b3d0b, #032b03);
 
   background-image:
     url('https://i.imgur.com/0uQw7pC.png'),
@@ -64,12 +64,15 @@ h1 {
   border: 3px solid rgba(255, 255, 255, 0.8);
 }
 
-/* Casillas */
+/* ============================
+   CASILLAS (verde claro)
+   ============================ */
 .cell {
   width: 100px;
   height: 100px;
-  background: rgba(255, 255, 255, 0.25);
-  border: 2px solid rgba(255, 255, 255, 0.9);
+
+  background: rgba(120, 255, 120, 0.35);
+  border: 2px solid rgba(200, 255, 200, 0.9);
   border-radius: 15px;
   font-size: 48px;
   font-weight: bold;
@@ -84,7 +87,7 @@ h1 {
 }
 
 .cell:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(150, 255, 150, 0.55);
   transform: scale(1.08);
   box-shadow: 0 0 18px rgba(0,255,150,0.8);
 }
@@ -112,4 +115,24 @@ button:hover {
   transform: scale(1.07);
   background: linear-gradient(135deg, #00e676, #00c853, #00ff9d);
   box-shadow: 0 0 20px rgba(0,255,150,0.9);
+}
+
+/* ============================
+   CURSORES PERSONALIZADOS
+   ============================ */
+
+/* Cursor para X */
+.cursor-x {
+  cursor: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'>\
+    <text x='0' y='24' font-size='28' font-weight='bold' fill='lime'>X</text>\
+  </svg>") 0 24, auto;
+}
+
+/* Cursor para O */
+.cursor-o {
+  cursor: url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'>\
+    <text x='0' y='24' font-size='28' font-weight='bold' fill='cyan'>O</text>\
+  </svg>") 0 24, auto;
 }

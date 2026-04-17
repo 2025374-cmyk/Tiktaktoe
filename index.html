@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="cursor-x">
   <h1>Raul's Tik Tak Toe</h1>
 
   <!-- NOMBRES -->
@@ -17,7 +17,7 @@
     <button onclick="setNames()">Guardar nombres</button>
   </div>
 
-  <h2 id="playersDisplay">Jugador X: ---  |  Jugador O: ---</h2>
+  <h2 id="playersDisplay">Jugador X: X  |  Jugador O: O</h2>
 
   <!-- MARCADOR Y TIEMPO -->
   <h2 id="scoreboard">X: 0 | O: 0</h2>
@@ -30,6 +30,28 @@
 
   <button onclick="restartGame()">Reiniciar</button>
 
+  <!-- TABLA DE ESTADÍSTICAS -->
+  <h2>Estadísticas</h2>
+  <table id="statsTable" border="1" cellpadding="8">
+    <tr>
+      <th>Jugador</th>
+      <th>Wins</th>
+      <th>Losses</th>
+    </tr>
+    <tr>
+      <td id="nameX">X</td>
+      <td id="winsX">0</td>
+      <td id="lossX">0</td>
+    </tr>
+    <tr>
+      <td id="nameO">O</td>
+      <td id="winsO">0</td>
+      <td id="lossO">0</td>
+    </tr>
+  </table>
+
+  <h3 id="drawsDisplay">Draws: 0</h3>
+
   <script>
     const board = document.getElementById("board");
     const status = document.getElementById("status");
@@ -37,8 +59,8 @@
     const scoreboard = document.getElementById("scoreboard");
     const timerDisplay = document.getElementById("timer");
 
-    let player1Name = "---";
-    let player2Name = "---";
+    let player1Name = "X";
+    let player2Name = "O";
 
     let currentPlayer = "X";
     let gameActive = true;
@@ -47,21 +69,40 @@
     let scoreX = 0;
     let scoreO = 0;
 
+    let lossesX = 0;
+    let lossesO = 0;
+    let draws = 0;
+
     let timer = 0;
     let timerInterval = null;
+
+    /* ============================
+       ACTUALIZAR CURSOR
+       ============================ */
+    function updateCursor() {
+      if (currentPlayer === "X") {
+        document.body.classList.add("cursor-x");
+        document.body.classList.remove("cursor-o");
+      } else {
+        document.body.classList.add("cursor-o");
+        document.body.classList.remove("cursor-x");
+      }
+    }
 
     function setNames() {
       const p1 = document.getElementById("player1Name").value.trim();
       const p2 = document.getElementById("player2Name").value.trim();
 
-      player1Name = p1 !== "" ? p1 : "Jugador X";
-      player2Name = p2 !== "" ? p2 : "Jugador O";
+      player1Name = p1 !== "" ? p1 : "X";
+      player2Name = p2 !== "" ? p2 : "O";
 
       updateNameDisplay();
     }
 
     function updateNameDisplay() {
       playersDisplay.textContent = `Jugador X: ${player1Name}  |  Jugador O: ${player2Name}`;
+      document.getElementById("nameX").textContent = player1Name;
+      document.getElementById("nameO").textContent = player2Name;
     }
 
     const winningConditions = [
@@ -89,6 +130,7 @@
         board.appendChild(cell);
       }
       startTimer();
+      updateCursor(); // ← IMPORTANTE
     }
 
     function handleCellClick(e) {
@@ -109,10 +151,16 @@
         gameActive = false;
         clearInterval(timerInterval);
 
-        if (player === "X") scoreX++;
-        else scoreO++;
+        if (player === "X") {
+          scoreX++;
+          lossesO++;
+        } else {
+          scoreO++;
+          lossesX++;
+        }
 
         updateScoreboard();
+        updateStats();
         return;
       }
 
@@ -120,11 +168,15 @@
         status.textContent = "Empate";
         gameActive = false;
         clearInterval(timerInterval);
+
+        draws++;
+        updateStats();
         return;
       }
 
       currentPlayer = player === "X" ? "O" : "X";
       status.textContent = `Turno de ${currentPlayer}`;
+      updateCursor(); // ← IMPORTANTE
     }
 
     function checkWinner(player) {
@@ -141,12 +193,23 @@
       scoreboard.textContent = `X: ${scoreX} | O: ${scoreO}`;
     }
 
+    function updateStats() {
+      document.getElementById("winsX").textContent = scoreX;
+      document.getElementById("winsO").textContent = scoreO;
+
+      document.getElementById("lossX").textContent = lossesX;
+      document.getElementById("lossO").textContent = lossesO;
+
+      document.getElementById("drawsDisplay").textContent = `Draws: ${draws}`;
+    }
+
     function restartGame() {
       currentPlayer = "X";
       gameActive = true;
       gameState = ["", "", "", "", "", "", "", "", ""];
       status.textContent = "Turno de X";
       createBoard();
+      updateCursor(); // ← IMPORTANTE
     }
 
     createBoard();
